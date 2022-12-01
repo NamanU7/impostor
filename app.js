@@ -9,7 +9,7 @@ const path = require('path');
 
 //Routers imported from the routes dir which handle the routes for specified endpoints.
 const indexRouter = require('./routes/index.js');
-// const roomRouter = require('./routes/room.js');
+const roomRouter = require('./routes/room.js');
 
 //Initializing the server object from our express import.
 const app = express();
@@ -42,13 +42,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 /* ROUTE-HANDLING (MIDDLEWARE) */
 
 app.use("/", indexRouter);
-// app.use("/room", roomRouter);
+app.use("/room", roomRouter);
 
 //End of request handling chain
 
 server.listen(3000, () => {
-    console.log('Listening on port 3000.')
-})
+    console.log('Listening on port 3000...');
+});
 
 
 

@@ -1,13 +1,18 @@
-const express = require('express');
-const router = express.Router();
+function router(io) {
+    const express = require('express');
+    const router = express.Router();
 
-//Controller modules
-const room_controller = require('../controllers/roomController.js');
+    //Controller modules
+    const room_controller = require('../controllers/roomController.js');
 
-//GET request for chatroom page sending message
-router.get('/', room_controller.user_create_get);
+    //GET request for chatroom page sending message
+    router.get('/', room_controller.user_create_get);
 
-//POST request for making a message
-router.post('/', room_controller.user_create_post);
 
-module.exports = router;
+    //POST request for making a message
+    router.post('/', room_controller.user_create_post);
+
+    return router
+}
+
+module.exports = router();

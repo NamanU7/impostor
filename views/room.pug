@@ -1,7 +1,16 @@
-h1 Chat Room
-h3= name
-p Welcome to the room, #{name}!
-//can change this to a description list in the future
-each msg in messages
-  ul    
-    li= msg
+head
+  script(defer, type="module" src="/javascripts/clientSocket.js")
+  
+body 
+  h1 Chat Room
+  h3= name
+  p Welcome to the room, #{name}!
+  //can change this to a description list in the future
+  each msg in messages
+    ul    
+      li= msg
+  //this is the form for sending messages
+  form 
+    label(for="name_field") Message:
+    input(id= "name_field", type='text', name='name_field', value='Write here')
+    input(type='submit', value='Send')

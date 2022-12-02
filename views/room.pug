@@ -6,11 +6,9 @@ body
   h3= name
   p Welcome to the room, #{name}!
   //can change this to a description list in the future
-  each msg in messages
-    ul    
-      li= msg
+  ul
   //this is the form for sending messages
   form 
-    label(for="name_field") Message:
-    input(id= "name_field", type='text', name='name_field', value='Write here')
+    label(for="text_message") Message:
+    input(id= "text_message", type='text', name='text_message', value='Write here')
     input(type='submit', value='Send')

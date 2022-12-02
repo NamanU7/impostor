@@ -7,8 +7,6 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 
-//CORS
-const cors = require('cors');
 //Routers imported from the routes dir which handle the routes for specified endpoints.
 const indexRouter = require('./routes/index.js');
 const roomRouter = require('./routes/room.js');
@@ -25,6 +23,8 @@ const { Server } = require('socket.io');
 //Initilaizing server with the http server.
 const io = new Server(server);
 
+//Defining a namespace (endpoint) for the socket server
+const roomNameSpace = io.of('/room');
 
 /* VIEW ENGINE SETUP */
 
@@ -47,8 +47,6 @@ app.use(express.urlencoded({ extended: false }));
 //Makes express serve all the static files in ./public.
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(cors());
-
 /* ROUTE-HANDLING (MIDDLEWARE) */
 
 app.use("/", indexRouter);
@@ -56,8 +54,17 @@ app.use("/room", roomRouter);
 
 //End of request handling chain
 
-io.of('/room').on('connection', (socket) => {
-    console.log('yay finally!!!!!');
+//Socket Connection
+roomNameSpace.on('connection', (socket) => {
+    console.log(`User ${socket.id} connected`);
+
+    socket.on('chat message', (msg) => {
+        roomNameSpace.emit('chat message', msg);
+    });
+
+    socket.on('disconnect', () => {
+        console.log(`User ${socket.id} disconnected`);
+    });
 });
 
 server.listen(3000, () => {

@@ -7,6 +7,8 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 
+//CORS
+const cors = require('cors');
 //Routers imported from the routes dir which handle the routes for specified endpoints.
 const indexRouter = require('./routes/index.js');
 const roomRouter = require('./routes/room.js');
@@ -16,6 +18,13 @@ const app = express();
 
 //Setup an http server with app as the function handler.
 const server = http.createServer(app);
+
+//Importing socket.io module
+const { Server } = require('socket.io');
+
+//Initilaizing server with the http server.
+const io = new Server(server);
+
 
 /* VIEW ENGINE SETUP */
 
@@ -38,6 +47,7 @@ app.use(express.urlencoded({ extended: false }));
 //Makes express serve all the static files in ./public.
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(cors());
 
 /* ROUTE-HANDLING (MIDDLEWARE) */
 
@@ -45,6 +55,10 @@ app.use("/", indexRouter);
 app.use("/room", roomRouter);
 
 //End of request handling chain
+
+io.of('/room').on('connection', (socket) => {
+    console.log('yay finally!!!!!');
+});
 
 server.listen(3000, () => {
     console.log('Listening on port 3000...');

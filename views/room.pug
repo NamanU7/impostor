@@ -1,7 +1,10 @@
-head
+extends layout.pug 
+
+block scripts
   script(defer, type="module" src="/javascripts/clientSocket.js")
+  link(rel="stylesheet", href="/stylesheets/room.css")
   
-body 
+block content
   h1 Chat Room
   h3= name
   p Welcome to the room, #{name}!

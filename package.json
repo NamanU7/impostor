@@ -19,9 +19,12 @@
   "homepage": "https://github.com/NamanU7/impostor#readme",
   "dependencies": {
     "express": "^4.18.2",
+    "passport": "^0.6.0",
+    "passport-google-oidc": "^0.1.0",
     "pug": "^3.0.2",
     "socket.io": "^4.5.4",
-    "socket.io-client": "^4.5.4"
+    "socket.io-client": "^4.5.4",
+    "sqlite3": "^5.1.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

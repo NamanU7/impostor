@@ -10,6 +10,7 @@ const path = require('path');
 //Routers imported from the routes dir which handle the routes for specified endpoints.
 const indexRouter = require('./routes/index.js');
 const roomRouter = require('./routes/room.js');
+const authRouter = require('./routes/auth.js');
 
 //Initializing the server object from our express import.
 const app = express();
@@ -24,7 +25,7 @@ const { Server } = require('socket.io');
 const io = new Server(server);
 
 //Defining a namespace (endpoint) for the socket server
-const roomNameSpace = io.of('/room');
+const roomNameSpace = io.of('/room'); //roomNameSpace is the 'parent namespace'
 
 /* VIEW ENGINE SETUP */
 
@@ -50,6 +51,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 /* ROUTE-HANDLING (MIDDLEWARE) */
 
 app.use("/", indexRouter);
+app.use("/", authRouter);
 app.use("/room", roomRouter);
 
 //End of request handling chain
@@ -79,6 +81,12 @@ roomNameSpace.on('connection', async (socket) => {
 server.listen(3000, () => {
     console.log('Listening on port 3000...');
 });
+
+
+//Must make 3 different namespaces, 1 for each level, the first level being accesible to all.
+
+let firstLevel = io.of('/level1')
+
 
 
 

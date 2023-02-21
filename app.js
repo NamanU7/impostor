@@ -54,12 +54,21 @@ app.use("/room", roomRouter);
 
 //End of request handling chain
 
+
+
+
+
+
+
 //Socket Connection
-roomNameSpace.on('connection', (socket) => {
+roomNameSpace.on('connection', async (socket) => {
+
     console.log(`User ${socket.id} connected`);
 
+    //Emits the event to all those connected besides the sender of the event (the one who sent this event)
     socket.on('chat message', (msg) => {
-        roomNameSpace.emit('chat message', msg);
+        socket.broadcast.emit('chat message', msg);
+        // roomNameSpace.emit('chat message', msg);
     });
 
     socket.on('disconnect', () => {

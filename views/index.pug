@@ -1,5 +1,10 @@
 extends layout.pug 
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h1 Impostor
+  p Welcome to Impostor
+  form(action="/room")
+    label(for="name") Name:
+    input(id="name", type="text", name="name", value="Put Name Here!")
+    input(type="submit", value="send")
+    

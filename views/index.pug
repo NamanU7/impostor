@@ -7,4 +7,7 @@ block content
     label(for="name") Name:
     input(id="name", type="text", name="name", placeholder="name")
     input(type="submit", value="send")
+
+  form(action="/logout", method="POST")
+    button(class="logout", type="submit") Sign out
     

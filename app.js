@@ -52,22 +52,47 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 //Add session support to the app
+const sessionStore = new SQLiteStore({ db: "sessions.db", dir: "./db" });
 app.use(
   session({
     secret: "keyboard cat",
     resave: false,
-    saveUninitialized: false,
-    store: new SQLiteStore({
-      db: "sessions.db",
-      dir: "./db",
-    }),
+    saveUninitialized: true,
+    store: sessionStore,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24,
+    },
   })
 );
 
-//Authenticate the session
-app.use(passport.authenticate("session"));
+/**
+ * ----------- PASSPORT AUTHENTICATION ------------
+ */
 
-/* ROUTE-HANDLING (MIDDLEWARE) */
+//requiring the configed passport with the local strategy so that app.js knows about it.
+require("./config/passport");
+
+//TODO
+app.use(passport.initialize());
+app.use(passport.session());
+
+/**
+ * Custom middle ware for debugging
+ */
+
+app.use((req, res, next) => {
+  console.log(req.session); //created by express-session
+  console.log(req.user); //created by passport
+  next();
+});
+
+//Authenticate the session
+//This will be handeled for, specific endpoints in the app.
+// app.use(passport.authenticate("session")); //adds the logout function to req obj
+
+/**
+ * ----------------- ROUTES ---------------------
+ */
 
 app.use("/", indexRouter);
 app.use("/", authRouter);

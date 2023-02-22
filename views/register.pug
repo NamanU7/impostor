@@ -1,0 +1,10 @@
+extends layout.pug 
+
+block content
+  h1 Register
+  form(action='/local/register', method='POST')
+    label(for='username') Username 
+    input(id='username', type='text', name='uname', placeholder='ExampleUsername', autocomplete='username', required)
+    label(for='current-password') Password 
+    input(id='current-password', type='password', name='pw', autocomplete='current-password', required)
+    input(type='submit', value='register')

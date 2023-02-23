@@ -1,1 +1,1 @@
-SELECT * FROM sessions
+SELECT * FROM users

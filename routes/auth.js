@@ -29,16 +29,10 @@ router.get(
 // router.get("/oauth2/redirect/google", authGoogleController.redirect_get);
 
 /**
- * ------------ Local Auth ---------------
+ * ------------ Local JWT Auth ---------------
  */
 //fulfill route here
-router.post(
-  "/login/local",
-  passport.authenticate("local", {
-    failureRedirect: "/login",
-    successRedirect: "/",
-  })
-);
+router.post("/login/local", authLocalController.login_post);
 router.get("/login/local", authLocalController.login_get);
 router.post("/local/register", authLocalController.register_post);
 router.get("/local/register", authLocalController.register_get);

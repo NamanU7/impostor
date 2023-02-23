@@ -6,7 +6,7 @@ db.serialize(() => {
   db.run(
     "CREATE TABLE IF NOT EXISTS users ( \
         id INTEGER PRIMARY KEY, \
-        username TEXT UNIQUE, \
+        email TEXT UNIQUE, \
         hashed_password BLOB, \
         salt BLOB, \
         name TEXT \

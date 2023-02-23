@@ -1,61 +1,49 @@
-const passport = require("passport");
-const validPassword = require("../lib/passwordUtils").validPassword;
-const LocalStrategy = require("passport-local").Strategy;
+const fs = require("fs");
+const path = require("path");
 const db = require("./db");
+const JwtStrategy = require("passport-jwt").Strategy;
+const ExtractJwt = require("passport-jwt").ExtractJwt;
 
-const customFields = {
-  usernameField: "uname",
-  passwordField: "pw",
+const pathToKey = path.join(__dirname, "..", "id_rsa_pub.pem");
+const PUB_KEY = fs.readFileSync(pathToKey, "utf8");
+
+const cookieExtracter = function (req) {
+  let token = null;
+  if (req && req.cookies) {
+    token = req.cookies["jwt"];
+  }
+
+  return token;
 };
 
-//done is a function that will recieve the results of the auth
-verifyCallback = (username, password, done) => {
-  db.get(
-    "SELECT * FROM users WHERE username = ?",
-    [username],
-    function (err, user) {
-      //db error:
-      if (err) {
-        return done(err);
-      }
-      //checking for user, user is js obj from sql query from db:
-      if (!user) {
-        return done(null, false, {
-          message: "Incorrect username or password. (username DNE)",
-        });
-      }
-
-      //password validation:
-      const isValid = validPassword(password, user.hashed_password, user.salt);
-
-      if (isValid) {
-        return done(null, user);
-      } else {
-        return done(null, false, {
-          message: "Incorrect username or password. (wrong password)",
-        });
-      }
-    }
-  );
+// Options to pass into JwtStrategy constructor - this is the verify piece of the auth
+const options = {
+  jwtFromRequest: cookieExtracter, //Autherization: Bearer <JWT>
+  secretOrKey: PUB_KEY,
+  algorithms: ["RS256"],
 };
 
-const strategy = new LocalStrategy(customFields, verifyCallback);
+// This is not used for the login POST method, as it is not issuing a JWT, this is meant for authorization
+const strategy = new JwtStrategy(options, function (payload, done) {
+  const id = payload.sub;
 
-passport.use(strategy);
-
-/**
- * ----------- Serialiaion + Deserialization of user to and from session -----------
- */
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((userId, done) => {
-  db.get("SELECT * FROM users WHERE id = ?", [userId], (err, user) => {
+  // At this point, the JwtStrategy has already validated the JWT under the hood.
+  // All we must do is ensure there is such a user in the db and retrieve said user.
+  db.get("SELECT * FROM users WHERE id = ?", [id], function (err, user) {
     if (err) {
-      return done(err);
+      return done(err, null);
     }
+    if (!user) {
+      return done(null, false);
+    }
+
     return done(null, user);
   });
+
+  //Passport will attach this user to the express req object (req.user)
 });
+
+// Configuring the global passport object to use the JwtStrategy
+module.exports = (passport) => {
+  passport.use(strategy);
+};

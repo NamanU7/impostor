@@ -3,9 +3,11 @@
 const session = require("express-session");
 const SQLiteStore = require("connect-sqlite3")(session);
 const passport = require("passport");
+require("dotenv").config();
 
 //Express framework for servers
 const express = require("express");
+const cookieParser = require("cookie-parser");
 
 //Node.js standard library modules for http and path for parsing file and dir paths.
 const http = require("http");
@@ -25,13 +27,15 @@ const server = http.createServer(app);
 //Importing socket.io module
 const { Server } = require("socket.io");
 
-//Initilaizing server with the http server.
+//Initilaizing socket server with the http server.
 const io = new Server(server);
 
 //Defining a namespace (endpoint) for the socket server
 const roomNameSpace = io.of("/room"); //roomNameSpace is the 'parent namespace'
 
-/* VIEW ENGINE SETUP */
+/*
+ * -------------- VIEW ENGINE SETUP -----------------
+ */
 
 //Setting up the (view) template engine.
 //Specifying the value 'views' to the directory where template are stored.
@@ -40,55 +44,54 @@ app.set("views", path.join(__dirname, "views"));
 //Specifying the value 'view engine' to the template library 'pug'.
 app.set("view engine", "pug");
 
-/* MIDDLEWARE */
+/*
+ * ---------------- MIDDLEWARE ------------------
+ */
 
-//Parse json in the req body.
+//Parse http headers, bodies, and adds it to the req object
 app.use(express.json());
-
-//Parse urlencoded bodies of req objects.
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 //Makes express serve all the static files in ./public.
 app.use(express.static(path.join(__dirname, "public")));
 
-//Add session support to the app
-const sessionStore = new SQLiteStore({ db: "sessions.db", dir: "./db" });
-app.use(
-  session({
-    secret: "keyboard cat",
-    resave: false,
-    saveUninitialized: true,
-    store: sessionStore,
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24,
-    },
-  })
-);
+//Add session support to the app (needed for google Oauth)
+// const sessionStore = new SQLiteStore({ db: "sessions.db", dir: "./db" });
+// app.use(
+//   session({
+//     secret: "keyboard cat",
+//     resave: false,
+//     saveUninitialized: false,
+//     store: sessionStore,
+//     cookie: {
+//       maxAge: 1000 * 60 * 60 * 24,
+//     },
+//   })
+// );
 
 /**
  * ----------- PASSPORT AUTHENTICATION ------------
  */
 
-//requiring the configed passport with the local strategy so that app.js knows about it.
-require("./config/passport");
+// Pass the global passport object into the configuration file
+require("./config/passport")(passport);
 
-//TODO
+// Initialize the passport object on every request
 app.use(passport.initialize());
-app.use(passport.session());
+
+// This is required for google Oaut not for JWT (might be removed in the future)
+// app.use(passport.session()); // serialized and deserializes user from session to populate req.user
 
 /**
  * Custom middle ware for debugging
  */
 
-app.use((req, res, next) => {
-  console.log(req.session); //created by express-session
-  console.log(req.user); //created by passport
-  next();
-});
-
-//Authenticate the session
-//This will be handeled for, specific endpoints in the app.
-// app.use(passport.authenticate("session")); //adds the logout function to req obj
+// app.use((req, res, next) => {
+//   console.log(req.session); //created by express-session
+//   console.log(req.user); //created by passport
+//   next();
+// });
 
 /**
  * ----------------- ROUTES ---------------------
@@ -100,7 +103,10 @@ app.use("/room", roomRouter);
 
 //End of request handling chain
 
-//Socket Connection
+/**
+ * ----------------- SOCKET CONNECTION -------------------
+ */
+
 roomNameSpace.on("connection", async (socket) => {
   console.log(`User ${socket.id} connected`);
 

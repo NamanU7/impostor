@@ -8,7 +8,7 @@ const pathToKey = path.join(__dirname, "..", "id_rsa_pub.pem");
 const PUB_KEY = fs.readFileSync(pathToKey, "utf8");
 
 const cookieExtracter = function (req) {
-  let token = null;
+  var token = null;
   if (req && req.cookies) {
     token = req.cookies["jwt"];
   }
@@ -18,7 +18,7 @@ const cookieExtracter = function (req) {
 
 // Options to pass into JwtStrategy constructor - this is the verify piece of the auth
 const options = {
-  jwtFromRequest: cookieExtracter, //Autherization: Bearer <JWT>
+  jwtFromRequest: cookieExtracter, //Extract JWT from cookie
   secretOrKey: PUB_KEY,
   algorithms: ["RS256"],
 };

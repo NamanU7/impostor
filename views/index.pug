@@ -3,10 +3,8 @@ extends layout.pug
 block content
   h1 Impostor
   p Welcome to Impostor
-  form(action="/room", method="GET")
-    label(for="name") Name:
-    input(id="name", type="text", name="name", placeholder="name")
-    input(type="submit", value="send")
+  button Protected Room
+    a(href='/room') room
 
   form(action="/logout", method="POST")
     button(class="logout", type="submit") Sign out

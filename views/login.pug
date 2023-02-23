@@ -2,5 +2,9 @@ extends layout.pug
 
 block content
   h1 Login
-  a(class="button google", href="/login/federated/google") Sign in with Google
-  a(class="button local", href="/login/local") Sign in with proprietary
+  form(action='/login', method='POST')
+    label(for='email') email 
+    input(id='email', type='text', name='email', placeholder='example@email.com', autocomplete='email', required)
+    label(for='current-password') Password
+    input(id='current-password', type='password', name='password', autocomplete='current-password', required)
+    input(type='submit', value='login')

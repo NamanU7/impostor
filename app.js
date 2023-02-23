@@ -1,7 +1,5 @@
 /* IMPORTS */
 
-const session = require("express-session");
-const SQLiteStore = require("connect-sqlite3")(session);
 const passport = require("passport");
 require("dotenv").config();
 
@@ -56,20 +54,6 @@ app.use(cookieParser());
 //Makes express serve all the static files in ./public.
 app.use(express.static(path.join(__dirname, "public")));
 
-//Add session support to the app (needed for google Oauth)
-// const sessionStore = new SQLiteStore({ db: "sessions.db", dir: "./db" });
-// app.use(
-//   session({
-//     secret: "keyboard cat",
-//     resave: false,
-//     saveUninitialized: false,
-//     store: sessionStore,
-//     cookie: {
-//       maxAge: 1000 * 60 * 60 * 24,
-//     },
-//   })
-// );
-
 /**
  * ----------- PASSPORT AUTHENTICATION ------------
  */
@@ -79,19 +63,6 @@ require("./config/passport")(passport);
 
 // Initialize the passport object on every request
 app.use(passport.initialize());
-
-// This is required for google Oaut not for JWT (might be removed in the future)
-// app.use(passport.session()); // serialized and deserializes user from session to populate req.user
-
-/**
- * Custom middle ware for debugging
- */
-
-// app.use((req, res, next) => {
-//   console.log(req.session); //created by express-session
-//   console.log(req.user); //created by passport
-//   next();
-// });
 
 /**
  * ----------------- ROUTES ---------------------

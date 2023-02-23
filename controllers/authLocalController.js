@@ -7,7 +7,7 @@ const db = require("../config/db");
 /**
  * ---------- POST Routes --------------
  */
-//The authentication is handles in the router as the code is very minimal.
+
 exports.login_post = function (req, res, next) {
   db.get(
     "SELECT * FROM users WHERE email = ?",
@@ -35,7 +35,7 @@ exports.login_post = function (req, res, next) {
         //   expiresIn: jwt.expires,
         // });
 
-        res.cookie("token", jwt.token).json({
+        res.cookie("jwt", jwt.token).json({
           success: true,
           token: jwt.token,
           expiresIn: jwt.expires,
@@ -109,5 +109,5 @@ exports.register_get = function (req, res, next) {
 };
 
 exports.login_get = function (req, res, next) {
-  res.render("loginLocal");
+  res.render("login");
 };

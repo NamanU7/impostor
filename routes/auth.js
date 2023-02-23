@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const authGoogleController = require("../controllers/authGoogleController");
 const authLocalController = require("../controllers/authLocalController");
 const passport = require("passport");
 /**
@@ -12,30 +11,13 @@ router.get("/login", (req, res, next) => {
 });
 
 /**
- * ----------- Google OAuth ---------------
- */
-
-router.get("/login/google", authGoogleController.login_get);
-
-router.get("/login/federated/google", passport.authenticate("google"));
-
-router.get(
-  "/oauth2/redirect/google",
-  passport.authenticate("google", {
-    successRedirect: "/",
-    failureRedirect: "/login",
-  })
-);
-// router.get("/oauth2/redirect/google", authGoogleController.redirect_get);
-
-/**
  * ------------ Local JWT Auth ---------------
  */
 //fulfill route here
-router.post("/login/local", authLocalController.login_post);
-router.get("/login/local", authLocalController.login_get);
-router.post("/local/register", authLocalController.register_post);
-router.get("/local/register", authLocalController.register_get);
+router.post("/login", authLocalController.login_post);
+// router.get("/login/", authLocalController.login_get);
+router.post("/register", authLocalController.register_post);
+router.get("/register", authLocalController.register_get);
 
 module.exports = router;
 
